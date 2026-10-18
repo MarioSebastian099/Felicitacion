@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>¡Feliz Cumpleaños! 🎂🐾</title>
+  <meta name="description" content="Una sorpresa muy especial de cumpleaños para la mamá de Mich con amor.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Outfit:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="./style.css?v=17">
+</head>
+<body>
+  <!-- Canvas para fuegos artificiales y confeti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Audio de Las Mañanitas (Pedro Infante) -->
+  <audio id="mananitas-audio" src="./las-mananitas.mp3" preload="auto"></audio>
+
+  <!-- Contenedor principal para móvil -->
+  <main class="app-container">
+    
+    <!-- Elementos decorativos flotantes de fondo -->
+    <div class="background-decorations" aria-hidden="true">
+      <div class="floating-balloon balloon-1">🎈</div>
+      <div class="floating-balloon balloon-2">🩵</div>
+      <div class="floating-balloon balloon-3">💛</div>
+      <div class="floating-star star-1">✨</div>
+      <div class="floating-star star-2">⭐</div>
+      <div class="floating-star star-3">🌸</div>
+      <div class="floating-star star-4">🦋</div>
+      <div class="floating-star star-5">🧁</div>
+    </div>
+
+    <!-- Barra superior de utilidades -->
+    <header class="top-bar">
+      <button id="btn-sound" class="icon-btn" title="Activar/Desactivar Sonido" aria-label="Control de sonido">
+        <span id="sound-icon">🔔</span>
+      </button>
+      <div class="badge-tag" id="badge-tag" role="button" tabindex="0" title="Toca para leer la dedicatoria">💌 Para la Mamá de Mich</div>
+      <button id="btn-edit-name" class="icon-btn" title="Personalizar nombre" aria-label="Cambiar nombre">
+        ✏️
+      </button>
+    </header>
+
+    <!-- Título principal -->
+    <section class="greeting-header">
+      <p class="pre-title">¡Hoy es un día muy especial! 🎉</p>
+      <h1 class="main-title" id="display-title">¡Feliz Cumpleaños, <br><span class="highlight-name" id="name-target">Mamá de Mich</span>! 🌸</h1>
+    </section>
+
+    <!-- Escenario del Pastel y Gatito -->
+    <section class="interactive-stage" id="cake-stage">
+      
+      <!-- Indicador o llamado a la acción antes de abrir -->
+      <div class="tap-hint" id="tap-hint">
+        <div class="pulse-ring"></div>
+        <div class="hint-pill">
+          <span class="finger-emoji">👉</span> ¡Toca el pastel para tu sorpresa! 🎂
+        </div>
+      </div>
+
+      <!-- El contenedor del pastel interactivo -->
+      <div class="cake-box" id="interactive-cake" role="button" tabindex="0" aria-label="Pastel sorpresa interactivo">
+        
+        <!-- Nube / Burbuja de diálogo del gatito (aparece cuando sale) -->
+        <div class="speech-bubble" id="kitten-bubble">
+          <span class="bubble-text" id="bubble-message">¡Miau! 🐾 ¡Muchas felicidades en tu día! 💖🎂</span>
+          <div class="bubble-tail"></div>
+        </div>
+
+        <!-- SVG Completo del Pastel + Gatito interactivo -->
+        <svg class="cake-svg" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Gradientes para el pastel -->
+            <linearGradient id="frostingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFF0F5" />
+              <stop offset="50%" stop-color="#FFE4E1" />
+              <stop offset="100%" stop-color="#FFD1DC" />
+            </linearGradient>
+
+            <linearGradient id="cakeBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FFB6C1" />
+              <stop offset="50%" stop-color="#FF9AA2" />
+              <stop offset="100%" stop-color="#E87A90" />
+            </linearGradient>
+
+            <!-- Piso 2: Azul celeste pastel -->
+            <linearGradient id="cakeBlueTierGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#B3E5FC" />
+              <stop offset="50%" stop-color="#81D4FA" />
+              <stop offset="100%" stop-color="#4FC3F7" />
+            </linearGradient>
+
+            <!-- Glaseado amarillo crema pastel -->
+            <linearGradient id="frostingYellowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFFDE7" />
+              <stop offset="50%" stop-color="#FFF9C4" />
+              <stop offset="100%" stop-color="#FFF176" />
+            </linearGradient>
+
+            <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFFFFF" />
+              <stop offset="50%" stop-color="#EAEAEA" />
+              <stop offset="100%" stop-color="#D5D5D5" />
+            </linearGradient>
+
+            <linearGradient id="goldPlate" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFE082" />
+              <stop offset="50%" stop-color="#FFCA28" />
+              <stop offset="100%" stop-color="#FFA000" />
+            </linearGradient>
+
+            <linearGradient id="candleGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#81D4FA" />
+              <stop offset="50%" stop-color="#BBDEFB" />
+              <stop offset="100%" stop-color="#4FC3F7" />
+            </linearGradient>
+
+            <!-- Vela Central: Amarillo pastel -->
+            <linearGradient id="candleGradYellow" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FFF59D" />
+              <stop offset="50%" stop-color="#FFF176" />
+              <stop offset="100%" stop-color="#FFD54F" />
+            </linearGradient>
+
+            <linearGradient id="candleGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FF80AB" />
+              <stop offset="50%" stop-color="#FFD8E4" />
+              <stop offset="100%" stop-color="#F50057" />
+            </linearGradient>
+
+            <linearGradient id="flameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="#FF3D00" />
+              <stop offset="40%" stop-color="#FF9100" />
+              <stop offset="80%" stop-color="#FFEA00" />
+              <stop offset="100%" stop-color="#FFFFFF" />
+            </linearGradient>
+
+            <!-- Gradientes para el gatito -->
+            <radialGradient id="kittenFur" cx="40%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#FFF9F2" />
+              <stop offset="60%" stop-color="#FFEED9" />
+              <stop offset="100%" stop-color="#FAD4B2" />
+            </radialGradient>
+
+            <linearGradient id="earPink" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FFB6C1" />
+              <stop offset="100%" stop-color="#FF85A2" />
+            </linearGradient>
+
+            <linearGradient id="partyHatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7C4DFF" />
+              <stop offset="50%" stop-color="#E040FB" />
+              <stop offset="100%" stop-color="#FF4081" />
+            </linearGradient>
+
+            <!-- Filtros de sombra suave -->
+            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+            
+            <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="130%">
+              <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#552233" flood-opacity="0.15" />
+            </filter>
+
+            <!-- Clip path para que el gatito salga desde dentro del pastel -->
+            <clipPath id="cakeHoleClip">
+              <rect x="50" y="0" width="300" height="285" />
+            </clipPath>
+          </defs>
+
+          <!-- Plato dorado base con brillo -->
+          <ellipse cx="200" cy="425" rx="175" ry="26" fill="rgba(0,0,0,0.08)" />
+          <ellipse cx="200" cy="418" rx="165" ry="22" fill="url(#goldPlate)" stroke="#F57F17" stroke-width="2" />
+          <ellipse cx="200" cy="415" rx="150" ry="18" fill="#FFFDE7" opacity="0.6" />
+
+          <!-- Miguitas y restos de pastel en el plato cuando se come el pastel completo -->
+          <g id="plate-crumbs" class="plate-crumbs">
+            <!-- Sombra suave de contacto del gatito sentado en el plato -->
+            <ellipse id="kitten-plate-shadow" cx="200" cy="417" rx="82" ry="14" fill="rgba(80, 20, 40, 0.2)" />
+
+            <!-- Manchas de glaseado cremoso en el plato -->
+            <ellipse cx="150" cy="415" rx="24" ry="7" fill="#FF80AB" opacity="0.85" />
+            <ellipse cx="152" cy="414" rx="15" ry="4" fill="#FFFFFF" opacity="0.7" />
+            
+            <ellipse cx="250" cy="416" rx="26" ry="8" fill="#FF80AB" opacity="0.85" />
+            <ellipse cx="248" cy="415" rx="16" ry="4.5" fill="#FFFFFF" opacity="0.7" />
+
+            <!-- Migajitas de pan y chispitas -->
+            <circle cx="115" cy="413" r="3" fill="#D85A75" />
+            <circle cx="128" cy="417" r="4" fill="#FFA000" />
+            <circle cx="140" cy="412" r="2.5" fill="#FF4081" />
+            <circle cx="175" cy="419" r="3.5" fill="#FFA000" />
+            <circle cx="225" cy="420" r="4" fill="#D85A75" />
+            <circle cx="270" cy="415" r="3.2" fill="#FFA000" />
+            <circle cx="282" cy="412" r="2.2" fill="#00E676" />
+            <circle cx="290" cy="416" r="3" fill="#FF4081" />
+
+            <!-- Una fresita con hojitas que sobró en el plato -->
+            <g transform="translate(192, 410) scale(0.7)">
+              <path d="M 10 5 C 18 -5, 22 15, 10 22 C -2 15, 2 -5, 10 5 Z" fill="#FF1744" />
+              <polygon points="8,3 12,3 10,-2" fill="#00E676" />
+              <circle cx="8" cy="10" r="1.2" fill="#FFFDE7" />
+              <circle cx="12" cy="14" r="1.2" fill="#FFFDE7" />
+            </g>
+          </g>
+
+          <!-- BASE INFERIOR DEL PASTEL (Piso 1) -->
+          <g id="cake-base-layer" filter="url(#dropShadow)">
+            <path d="M 60 330 C 60 360, 100 395, 200 395 C 300 395, 340 360, 340 330 L 340 380 C 340 405, 300 420, 200 420 C 100 420, 60 405, 60 380 Z" fill="#D85A75" />
+            <path d="M 60 310 C 60 340, 100 375, 200 375 C 300 375, 340 340, 340 310 L 340 370 C 340 395, 300 410, 200 410 C 100 410, 60 395, 60 370 Z" fill="url(#cakeBodyGrad)" />
+            
+            <!-- Decoraciones de perlas / fresitas en el piso 1 -->
+            <g id="bottom-decorations">
+              <circle cx="85" cy="355" r="7" fill="#FF4081" />
+              <circle cx="120" cy="365" r="7" fill="#FFD54F" />
+              <circle cx="160" cy="372" r="7" fill="#40C4FF" />
+              <circle cx="200" cy="375" r="8" fill="#E040FB" />
+              <circle cx="240" cy="372" r="7" fill="#69F0AE" />
+              <circle cx="280" cy="365" r="7" fill="#FFD54F" />
+              <circle cx="315" cy="355" r="7" fill="#FF4081" />
+            </g>
+          </g>
+
+          <!-- CUERPO MEDIO DEL PASTEL (Piso 2 en Azul Celeste Pastel) -->
+          <g id="cake-middle-layer">
+            <path d="M 85 240 C 85 265, 120 295, 200 295 C 280 295, 315 265, 315 240 L 315 320 C 315 345, 280 360, 200 360 C 120 360, 85 345, 85 320 Z" fill="url(#cakeBlueTierGrad)" stroke="#4FC3F7" stroke-width="1" />
+            
+            <!-- Glaseado que gotea del piso 2 en Amarillo Crema Pastel -->
+            <path d="M 85 240 
+                     C 100 270, 110 275, 120 255 
+                     C 130 280, 145 285, 155 258 
+                     C 165 290, 185 292, 195 260 
+                     C 205 292, 225 290, 235 258 
+                     C 245 285, 260 280, 270 255 
+                     C 280 275, 290 270, 315 240 
+                     C 280 265, 120 265, 85 240 Z" fill="url(#frostingYellowGrad)" stroke="#FFF59D" stroke-width="0.8" />
+            
+            <!-- Chispitas de colores -->
+            <g id="sprinkles" opacity="0.9">
+              <rect x="110" y="290" width="4" height="10" rx="2" fill="#E040FB" transform="rotate(25 110 290)" />
+              <rect x="150" y="310" width="4" height="10" rx="2" fill="#00E676" transform="rotate(-30 150 310)" />
+              <rect x="185" y="325" width="4" height="10" rx="2" fill="#FFD600" transform="rotate(15 185 325)" />
+              <rect x="220" y="320" width="4" height="10" rx="2" fill="#00B0FF" transform="rotate(-40 220 320)" />
+              <rect x="260" y="305" width="4" height="10" rx="2" fill="#FF1744" transform="rotate(35 260 305)" />
+              <rect x="285" y="285" width="4" height="10" rx="2" fill="#FF9100" transform="rotate(-15 285 285)" />
+            </g>
+          </g>
+
+          <!-- TAPA SUPERIOR DEL PASTEL (Se abre hacia la izquierda al hacer click) -->
+          <g id="cake-lid" class="cake-lid">
+            <!-- Superficie redonda del pastel -->
+            <ellipse cx="200" cy="240" rx="115" ry="32" fill="url(#frostingGrad)" stroke="#FF8DA1" stroke-width="1.5" />
+            <ellipse cx="200" cy="238" rx="100" ry="24" fill="#FFFFFF" opacity="0.65" />
+            
+            <!-- Fresitas en la tapa del pastel -->
+            <g id="strawberries">
+              <g transform="translate(130, 222) scale(0.8)">
+                <path d="M 10 5 C 18 -5, 22 15, 10 22 C -2 15, 2 -5, 10 5 Z" fill="#FF1744" />
+                <polygon points="8,3 12,3 10,-2" fill="#00E676" />
+                <circle cx="8" cy="10" r="1" fill="#FFFDE7" />
+                <circle cx="12" cy="14" r="1" fill="#FFFDE7" />
+              </g>
+              <g transform="translate(250, 222) scale(0.8)">
+                <path d="M 10 5 C 18 -5, 22 15, 10 22 C -2 15, 2 -5, 10 5 Z" fill="#FF1744" />
+                <polygon points="8,3 12,3 10,-2" fill="#00E676" />
+                <circle cx="8" cy="10" r="1" fill="#FFFDE7" />
+                <circle cx="12" cy="14" r="1" fill="#FFFDE7" />
+              </g>
+              <g transform="translate(190, 240) scale(0.85)">
+                <path d="M 10 5 C 18 -5, 22 15, 10 22 C -2 15, 2 -5, 10 5 Z" fill="#FF1744" />
+                <polygon points="8,3 12,3 10,-2" fill="#00E676" />
+                <circle cx="8" cy="10" r="1" fill="#FFFDE7" />
+                <circle cx="12" cy="14" r="1" fill="#FFFDE7" />
+              </g>
+            </g>
+
+            <!-- VELAS DE CUMPLEAÑOS -->
+            <!-- Vela 1 (Izquierda) -->
+            <g id="candle-1">
+              <rect x="160" y="185" width="10" height="45" rx="3" fill="url(#candleGrad1)" />
+              <line x1="160" y1="195" x2="170" y2="198" stroke="#FFFFFF" stroke-width="2.5" />
+              <line x1="160" y1="210" x2="170" y2="213" stroke="#FFFFFF" stroke-width="2.5" />
+              <line x1="165" y1="185" x2="165" y2="177" stroke="#333333" stroke-width="2" />
+              <!-- Flama animada -->
+              <g class="flame-group" id="flame-1">
+                <ellipse cx="165" cy="168" rx="8" ry="14" fill="url(#flameGrad)" filter="url(#softGlow)" />
+                <ellipse cx="165" cy="170" rx="4" ry="8" fill="#FFFDE7" />
+              </g>
+            </g>
+
+            <!-- Vela Central (Principal en Amarillo Pastel) -->
+            <g id="candle-center">
+              <rect x="195" y="175" width="11" height="55" rx="3" fill="url(#candleGradYellow)" stroke="#FFF59D" stroke-width="0.8" />
+              <line x1="195" y1="188" x2="206" y2="192" stroke="#FFFFFF" stroke-width="2.5" />
+              <line x1="195" y1="205" x2="206" y2="209" stroke="#FFFFFF" stroke-width="2.5" />
+              <line x1="200.5" y1="175" x2="200.5" y2="166" stroke="#333333" stroke-width="2" />
+              <!-- Flama Central -->
+              <g class="flame-group" id="flame-center">
+                <ellipse cx="200.5" cy="154" rx="10" ry="17" fill="url(#flameGrad)" filter="url(#softGlow)" />
+                <ellipse cx="200.5" cy="157" rx="5" ry="10" fill="#FFFDE7" />
+              </g>
+            </g>
+
+            <!-- Vela 3 (Derecha en Rosa Pastel) -->
+            <g id="candle-2">
+              <rect x="230" y="185" width="10" height="45" rx="3" fill="url(#candleGrad2)" stroke="#FF80AB" stroke-width="0.8" />
+              <line x1="230" y1="195" x2="240" y2="198" stroke="#FFFFFF" stroke-width="2.5" />
+              <line x1="230" y1="210" x2="240" y2="213" stroke="#FFFFFF" stroke-width="2.5" />
+              <line x1="235" y1="185" x2="235" y2="177" stroke="#333333" stroke-width="2" />
+              <!-- Flama animada -->
+              <g class="flame-group" id="flame-2">
+                <ellipse cx="235" cy="168" rx="8" ry="14" fill="url(#flameGrad)" filter="url(#softGlow)" />
+                <ellipse cx="235" cy="170" rx="4" ry="8" fill="#FFFDE7" />
+              </g>
+            </g>
+          </g>
+
+          <!-- GRUPO DEL GATITO (Renderizado encima de la tapa para que quede al frente) -->
+          <g id="kitten-group" class="kitten-hidden">
+            <!-- Sombra interior del pastel -->
+            <ellipse id="cake-interior-shadow" cx="200" cy="245" rx="90" ry="18" fill="rgba(100, 30, 50, 0.25)" />
+
+            <!-- Cuerpo y pechito blanco suave del gatito -->
+            <path d="M 135 270 C 125 185, 275 185, 265 270 Z" fill="url(#kittenFur)" />
+            <ellipse cx="200" cy="245" rx="42" ry="26" fill="#FFFFFF" opacity="0.95" />
+
+            <!-- Pancita gordita y llena (se infla cuando come pastel) -->
+            <g id="full-belly-group" class="full-belly-group">
+              <ellipse cx="200" cy="256" rx="66" ry="36" fill="url(#kittenFur)" stroke="#F5C396" stroke-width="1.8" />
+              <ellipse cx="200" cy="257" rx="50" ry="26" fill="#FFFFFF" opacity="0.96" />
+              <ellipse cx="200" cy="263" rx="4" ry="3" fill="#FF85A2" opacity="0.6" />
+            </g>
+
+            <!-- Pastelito que sostiene el gatito con su propia velita -->
+            <g id="mini-cupcake">
+              <!-- Capacillo del cupcake -->
+              <polygon points="186,236 214,236 210,254 190,254" fill="#FFE082" stroke="#FFA000" stroke-width="1.2" />
+              <line x1="192" y1="237" x2="194" y2="253" stroke="#FFB300" stroke-width="1" />
+              <line x1="200" y1="237" x2="200" y2="253" stroke="#FFB300" stroke-width="1" />
+              <line x1="208" y1="237" x2="206" y2="253" stroke="#FFB300" stroke-width="1" />
+              
+              <!-- Parte comestible del cupcake (desaparece al comer) -->
+              <g id="cupcake-edible">
+                <!-- Glaseado esponjoso -->
+                <ellipse cx="200" cy="235" rx="18" ry="10" fill="#FF80AB" />
+                <ellipse cx="200" cy="232" rx="13" ry="7" fill="#FF4081" />
+                <ellipse cx="200" cy="229" rx="8" ry="5" fill="#FFFFFF" opacity="0.8" />
+                
+                <!-- Velita del cupcake -->
+                <rect x="198" y="212" width="4.5" height="15" rx="1.5" fill="#00E5FF" />
+                <line x1="198" y1="216" x2="202.5" y2="218" stroke="#FFFFFF" stroke-width="1.2" />
+                <line x1="200.2" y1="212" x2="200.2" y2="206" stroke="#333333" stroke-width="1.2" />
+                
+                <!-- Flama animada del cupcake -->
+                <g class="flame-group" id="flame-kitten">
+                  <ellipse cx="200.2" cy="198" rx="5" ry="9" fill="url(#flameGrad)" filter="url(#softGlow)" />
+                  <ellipse cx="200.2" cy="199" rx="2.5" ry="5" fill="#FFFDE7" />
+                </g>
+              </g>
+
+              <!-- Miguistas de pastel cuando ya se lo comió -->
+              <g id="cupcake-crumbs" class="cupcake-crumbs">
+                <circle cx="193" cy="242" r="2" fill="#FF80AB" />
+                <circle cx="201" cy="244" r="2.2" fill="#FFA000" />
+                <circle cx="208" cy="241" r="1.8" fill="#FF4081" />
+                <circle cx="197" cy="248" r="1.5" fill="#FFA000" />
+              </g>
+            </g>
+
+            <!-- Paticas del gatito abrazando el pastelito -->
+            <g id="paw-left" class="paw-animated">
+              <ellipse cx="178" cy="238" rx="16" ry="13" fill="url(#kittenFur)" stroke="#F5C396" stroke-width="1.5" />
+              <ellipse cx="178" cy="239" rx="7" ry="5" fill="#FF85A2" />
+              <circle cx="172" cy="234" r="2.5" fill="#FF85A2" />
+              <circle cx="178" cy="232" r="2.5" fill="#FF85A2" />
+              <circle cx="184" cy="234" r="2.5" fill="#FF85A2" />
+            </g>
+
+            <g id="paw-right" class="paw-animated">
+              <ellipse cx="222" cy="238" rx="16" ry="13" fill="url(#kittenFur)" stroke="#F5C396" stroke-width="1.5" />
+              <ellipse cx="222" cy="239" rx="7" ry="5" fill="#FF85A2" />
+              <circle cx="216" cy="234" r="2.5" fill="#FF85A2" />
+              <circle cx="222" cy="232" r="2.5" fill="#FF85A2" />
+              <circle cx="228" cy="234" r="2.5" fill="#FF85A2" />
+            </g>
+
+            <!-- Cabeza del Gatito con rasgos kawaii -->
+            <g id="kitten-head">
+              <!-- Oreja Izquierda -->
+              <polygon points="120,110 158,145 110,165" fill="url(#kittenFur)" stroke="#E8B485" stroke-width="1" />
+              <polygon points="122,118 152,145 118,160" fill="url(#earPink)" />
+              
+              <!-- Oreja Derecha -->
+              <polygon points="280,110 242,145 290,165" fill="url(#kittenFur)" stroke="#E8B485" stroke-width="1" />
+              <polygon points="278,118 248,145 282,160" fill="url(#earPink)" />
+
+              <!-- Forma redondita de la cabeza -->
+              <ellipse cx="200" cy="160" rx="70" ry="60" fill="url(#kittenFur)" stroke="#F5C396" stroke-width="1.5" />
+
+              <!-- Mechones tiernos en las mejillas -->
+              <path d="M 130 165 C 118 165, 120 175, 132 180 C 120 183, 124 192, 138 190" fill="url(#kittenFur)" />
+              <path d="M 270 165 C 282 165, 280 175, 268 180 C 280 183, 276 192, 262 190" fill="url(#kittenFur)" />
+
+              <!-- OJOS -->
+              <!-- 1. Ojos anime brillantes (normal) -->
+              <g id="eyes-normal">
+                <g id="cat-eye-left" class="cat-eye">
+                  <ellipse cx="170" cy="155" rx="15" ry="18" fill="#2E1C0C" />
+                  <ellipse cx="168" cy="158" rx="13" ry="15" fill="#6A4028" />
+                  <circle cx="165" cy="149" r="6.5" fill="#FFFFFF" />
+                  <circle cx="175" cy="163" r="3.2" fill="#FFFFFF" />
+                  <circle cx="170" cy="166" r="1.5" fill="#FFFFFF" />
+                </g>
+
+                <g id="cat-eye-right" class="cat-eye">
+                  <ellipse cx="230" cy="155" rx="15" ry="18" fill="#2E1C0C" />
+                  <ellipse cx="232" cy="158" rx="13" ry="15" fill="#6A4028" />
+                  <circle cx="225" cy="149" r="6.5" fill="#FFFFFF" />
+                  <circle cx="235" cy="163" r="3.2" fill="#FFFFFF" />
+                  <circle cx="230" cy="166" r="1.5" fill="#FFFFFF" />
+                </g>
+              </g>
+
+              <!-- 2. Ojos felices cerrados de llenito (^ ^) -->
+              <g id="eyes-happy" class="eyes-happy">
+                <path d="M 158 158 Q 170 144, 182 158" fill="none" stroke="#5D4037" stroke-width="3.4" stroke-linecap="round" />
+                <path d="M 218 158 Q 230 144, 242 158" fill="none" stroke="#5D4037" stroke-width="3.4" stroke-linecap="round" />
+              </g>
+
+              <!-- Naricita tierna rosada -->
+              <polygon points="196,170 204,170 200,175" fill="#FF6584" />
+              
+              <!-- BOCAS -->
+              <!-- 1. Boquita normal :3 -->
+              <g id="mouth-normal">
+                <path d="M 200 175 Q 192 184, 185 178" fill="none" stroke="#6D4C41" stroke-width="2.4" stroke-linecap="round" />
+                <path d="M 200 175 Q 208 184, 215 178" fill="none" stroke="#6D4C41" stroke-width="2.4" stroke-linecap="round" />
+              </g>
+
+              <!-- 2. Boquita soplando las velas :o con ráfaga de aire -->
+              <g id="mouth-blowing" class="mouth-blowing">
+                <ellipse cx="200" cy="180" rx="5" ry="6.5" fill="#5D4037" />
+                <ellipse cx="200" cy="180" rx="3.2" ry="4.5" fill="#FF85A2" />
+                
+                <!-- Chorro de viento / soplo animado -->
+                <g id="breath-puff" class="breath-puff">
+                  <path d="M 200 188 C 196 196, 194 204, 198 210" fill="none" stroke="#81D4FA" stroke-width="2.5" stroke-linecap="round" opacity="0.85" />
+                  <path d="M 200 188 C 200 198, 200 206, 201 212" fill="none" stroke="#B3E5FC" stroke-width="3" stroke-linecap="round" opacity="0.9" />
+                  <path d="M 200 188 C 204 196, 206 204, 203 210" fill="none" stroke="#81D4FA" stroke-width="2.5" stroke-linecap="round" opacity="0.85" />
+                  <circle cx="200" cy="212" r="3.5" fill="#E1F5FE" opacity="0.9" />
+                  <circle cx="194" cy="209" r="2.5" fill="#E1F5FE" opacity="0.75" />
+                  <circle cx="206" cy="209" r="2.5" fill="#E1F5FE" opacity="0.75" />
+                </g>
+              </g>
+
+              <!-- 3. Boquita sonriente con lengüita comelona de llenito :P -->
+              <g id="mouth-happy" class="mouth-happy">
+                <path d="M 190 176 Q 200 186, 210 176" fill="none" stroke="#6D4C41" stroke-width="2.6" stroke-linecap="round" />
+                <path d="M 196 179 C 196 186, 204 186, 204 179 Z" fill="#FF4081" stroke="#D81B60" stroke-width="1" />
+              </g>
+
+              <!-- Manchita tierna de glaseado de fresa en el cachete -->
+              <g id="frosting-smudge" class="frosting-smudge">
+                <ellipse cx="225" cy="173" rx="6" ry="4.5" fill="#FF80AB" />
+                <circle cx="227" cy="171" r="1.5" fill="#FFFFFF" />
+                <circle cx="230" cy="175" r="1.5" fill="#FFD54F" />
+              </g>
+
+              <!-- Mejillas sonrojadas -->
+              <ellipse cx="148" cy="172" rx="15" ry="9" fill="#FF6584" opacity="0.45" />
+              <ellipse cx="252" cy="172" rx="15" ry="9" fill="#FF6584" opacity="0.45" />
+
+              <!-- Bigotitos -->
+              <line x1="156" y1="170" x2="112" y2="162" stroke="#BCAAA4" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="154" y1="175" x2="108" y2="175" stroke="#BCAAA4" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="156" y1="180" x2="116" y2="187" stroke="#BCAAA4" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="244" y1="170" x2="288" y2="162" stroke="#BCAAA4" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="246" y1="175" x2="292" y2="175" stroke="#BCAAA4" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="244" y1="180" x2="284" y2="187" stroke="#BCAAA4" stroke-width="1.8" stroke-linecap="round" />
+
+              <!-- Gorrito de Fiesta colorido sobre la cabecita -->
+              <g id="party-hat" transform="rotate(-6 200 100)">
+                <polygon points="180,115 220,115 200,42" fill="url(#partyHatGrad)" />
+                <path d="M 186 95 Q 200 102 214 95" fill="none" stroke="#FFD54F" stroke-width="3" />
+                <path d="M 191 75 Q 200 80 209 75" fill="none" stroke="#40C4FF" stroke-width="3" />
+                <path d="M 195 58 Q 200 61 205 58" fill="none" stroke="#FFFFFF" stroke-width="2.5" />
+                <!-- Pom-pón brillante -->
+                <circle cx="200" cy="40" r="10" fill="#FFEB3B" filter="url(#softGlow)" />
+                <circle cx="200" cy="40" r="8" fill="#FFF176" />
+              </g>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Contenedor del Regalo Sorpresa (aparece al dar click en 'Seguir festejando') -->
+      <div class="gift-container hidden" id="gift-container" role="button" tabindex="0" aria-label="Abrir regalo de cumpleaños">
+        <div class="gift-hint-bubble">
+          <span class="finger-emoji">👉</span> ¡Toca tu regalo sorpresa! 🎁✨
+        </div>
+        <div class="gift-box" id="gift-box">
+          <svg class="gift-svg" viewBox="0 0 280 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="giftBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FF80AB" />
+                <stop offset="50%" stop-color="#FF4081" />
+                <stop offset="100%" stop-color="#E91E63" />
+              </linearGradient>
+              <linearGradient id="pastelBlueRibbon" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#E1F5FE" />
+                <stop offset="50%" stop-color="#81D4FA" />
+                <stop offset="100%" stop-color="#29B6F6" />
+              </linearGradient>
+              <linearGradient id="goldRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FFF9C4" />
+                <stop offset="40%" stop-color="#FFD54F" />
+                <stop offset="80%" stop-color="#FFC107" />
+                <stop offset="100%" stop-color="#FFA000" />
+              </linearGradient>
+            </defs>
+
+            <!-- Sombra de la caja -->
+            <ellipse cx="140" cy="275" rx="105" ry="18" fill="rgba(80, 20, 40, 0.22)" />
+
+            <!-- Cuerpo de la caja del regalo (Rosa pastel) -->
+            <g id="gift-base">
+              <rect x="50" y="130" width="180" height="135" rx="14" fill="url(#giftBodyGrad)" stroke="#AD1457" stroke-width="2" />
+              <!-- Cinta vertical celeste pastel -->
+              <rect x="125" y="130" width="30" height="135" fill="url(#pastelBlueRibbon)" />
+              <line x1="140" y1="130" x2="140" y2="265" stroke="#0288D1" stroke-width="1.5" />
+              <!-- Cinta horizontal celeste pastel -->
+              <rect x="50" y="180" width="180" height="28" fill="url(#pastelBlueRibbon)" />
+              <line x1="50" y1="194" x2="230" y2="194" stroke="#0288D1" stroke-width="1.5" />
+            </g>
+
+            <!-- Tapa de la caja con moño gigante dorado -->
+            <g id="gift-lid-group" class="gift-lid-group">
+              <rect x="40" y="98" width="200" height="40" rx="10" fill="url(#giftBodyGrad)" stroke="#AD1457" stroke-width="2" />
+              <rect x="125" y="98" width="30" height="40" fill="url(#pastelBlueRibbon)" />
+              
+              <!-- Moño de fiesta -->
+              <g id="gift-bow" transform="translate(140, 98)">
+                <!-- Bucle izquierdo -->
+                <path d="M 0 0 C -48 -52, -80 -18, 0 0 Z" fill="url(#goldRibbonGrad)" stroke="#FFA000" stroke-width="1.8" />
+                <path d="M 0 0 C -38 -38, -60 -18, 0 0 Z" fill="#FFF8E1" opacity="0.45" />
+                <!-- Bucle derecho -->
+                <path d="M 0 0 C 48 -52, 80 -18, 0 0 Z" fill="url(#goldRibbonGrad)" stroke="#FFA000" stroke-width="1.8" />
+                <path d="M 0 0 C 38 -38, 60 -18, 0 0 Z" fill="#FFF8E1" opacity="0.45" />
+                <!-- Nudo central -->
+                <circle cx="0" cy="0" r="15" fill="url(#goldRibbonGrad)" stroke="#FF8F00" stroke-width="2" />
+                <!-- Cintas colgantes del moño -->
+                <path d="M -8 10 Q -32 40, -48 60" fill="none" stroke="url(#goldRibbonGrad)" stroke-width="9" stroke-linecap="round" />
+                <path d="M 8 10 Q 32 40, 48 60" fill="none" stroke="url(#goldRibbonGrad)" stroke-width="9" stroke-linecap="round" />
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Botones de Acción y Controles -->
+    <section class="action-dock" id="action-dock">
+      <button class="action-card-btn primary-btn" id="btn-blow-candles">
+        <span class="btn-icon">🎂</span>
+        <span class="btn-label" id="blow-label">¡Soplar las velas!</span>
+      </button>
+
+      <button class="action-card-btn tertiary-btn" id="btn-replay">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-label">Otra vez</span>
+      </button>
+    </section>
+
+  </main>
+
+  <!-- MODAL: Carta / Dedicatoria personalizada -->
+  <div class="letter-modal-overlay" id="letter-modal" aria-hidden="true">
+    <div class="letter-sheet">
+      <button class="modal-close-btn" id="btn-close-letter" aria-label="Cerrar dedicatoria">×</button>
+      
+      <div class="letter-header">
+        <span class="letter-stamp">🌸</span>
+        <h2 class="letter-title">¡Para <span id="modal-mom-name">la Mamá de Mich</span>! 💖</h2>
+      </div>
+
+      <div class="letter-body">
+        <p class="letter-greeting"><strong>¡Miau! 🐾🌸</strong></p>
+        <p class="letter-highlight"><strong>¡Muchísimas felicidades en su día! 🎂</strong></p>
+        <p>Le deseo un cumpleaños lleno de alegría, cariño y momentos preciosos. Que nunca le falten salud, amor y motivos para sonreír.</p>
+        <p>Y gracias por traer al mundo a una hija tan hermosa y especial como Mich. 🤎✨</p>
+        <p class="letter-closing"><strong>¡Que siga disfrutando muchísimo su día! 🌷</strong></p>
+      </div>
+
+      <div class="letter-footer">
+        <button class="letter-action-btn" id="btn-finish-letter">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Editar Nombre -->
+  <div class="letter-modal-overlay" id="name-modal" aria-hidden="true">
+    <div class="letter-sheet name-sheet">
+      <button class="modal-close-btn" id="btn-close-name" aria-label="Cerrar edición">×</button>
+      
+      <div class="letter-header">
+        <span class="letter-stamp">✏️</span>
+        <h2 class="letter-title">Personalizar Nombre</h2>
+      </div>
+
+      <div class="name-edit-box">
+        <label for="name-input" class="input-label">¿Cómo se llama la mamá de Mich?</label>
+        <input type="text" id="name-input" class="name-text-input" placeholder="Ej. Mamá de Mich, Rosa, Carmen, Tere..." maxlength="30" value="Mamá de Mich">
+        <p class="input-help">Puedes poner su nombre de pila para que sea aún más personal.</p>
+        
+        <div class="quick-names">
+          <button class="quick-chip" type="button" data-val="Mamá de Mich">Mamá de Mich</button>
+          <button class="quick-chip" type="button" data-val="Mami hermosa">Mami hermosa</button>
+          <button class="quick-chip" type="button" data-val="Mamá">Mamá</button>
+        </div>
+
+        <button class="letter-action-btn" id="btn-save-name">Guardar y Actualizar 💖</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY DE FINAL: Fondo que se obscurece con letras '¡FELICIDADES!' y fuegos artificiales -->
+  <div class="finale-overlay" id="finale-overlay" aria-hidden="true">
+    <!-- Fuegos artificiales animados en el cielo nocturno -->
+    <div class="fireworks-sky" aria-hidden="true">
+      <div class="firework firework-1">
+        <div class="explosion">
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+        </div>
+      </div>
+      <div class="firework firework-2">
+        <div class="explosion">
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+        </div>
+      </div>
+      <div class="firework firework-3">
+        <div class="explosion">
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+        </div>
+      </div>
+      <div class="firework firework-4">
+        <div class="explosion">
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+        </div>
+      </div>
+      <div class="firework firework-5">
+        <div class="explosion">
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+          <div class="spark"></div><div class="spark"></div><div class="spark"></div><div class="spark"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="finale-content">
+      <div class="finale-sparkles" aria-hidden="true">✨ 🌟 💖 🌟 ✨</div>
+      <h2 class="finale-title" id="finale-title">¡FELICIDADES!</h2>
+      <p class="finale-subtitle" id="finale-subtitle">
+        ¡Que sea un año maravilloso y lleno de bendiciones para la <span class="highlight-finale-name" id="finale-name">Mamá de Mich</span>! 🌸🎂
+      </p>
+      <div class="finale-tag">
+        <span>🎉 ¡Un abrazo con todo el corazón! 💕🐾</span>
+      </div>
+      <button class="finale-replay-btn" id="btn-finale-replay">
+        <span class="replay-icon">🔄</span> Reiniciar
+      </button>
+    </div>
+  </div>
+
+  <script src="./script.js?v=17"></script>
+</body>
+</html>
